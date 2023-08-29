@@ -1,0 +1,2 @@
+# Charm Upload Automation Reconcile Test Index Title some uuid: 47b90605-7f22-471a-a465-73f7f366f76c
+ placeholder index content for testing,  repository: canonical/gatekeeper-repo-test,  branch: ,  commit sha: c7cc762736c5a5b799d84efb2142b124e4f708eb,  some uuid: a43502f8-951e-41e8-a2f1-630d1094d39c
