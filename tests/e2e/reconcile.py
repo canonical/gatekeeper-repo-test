@@ -20,7 +20,7 @@ from src.gatekeeper.repository import DEFAULT_BRANCH_NAME
 from src.gatekeeper.repository import Client as RepositoryClient
 from src.gatekeeper.repository import create_repository_client
 
-from .common import E2E_BASE, E2E_SETUP, close_pull_request, general_cleanup, with_result
+from tests.e2e.common import E2E_BASE, E2E_SETUP, close_pull_request, general_cleanup, with_result
 
 
 class Action(str, Enum):

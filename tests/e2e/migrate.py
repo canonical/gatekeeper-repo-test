@@ -22,7 +22,7 @@ from src.gatekeeper.repository import (
     create_repository_client,
 )
 
-from .common import (
+from tests.e2e.common import (
     E2E_BASE,
     E2E_BRANCH,
     E2E_SETUP,
