@@ -12,3 +12,10 @@ Charmed MongoDB is an official distribution of MongoDB. It’s an open-source pr
 - [Read our Code of Conduct](https://ubuntu.com/community/code-of-conduct)
 - [Join the Discourse forum](https://discourse.charmhub.io/tag/mongodb)
 - [Contribute and report bugs](https://github.com/canonical/mongodb-k8s-operator)
+
+# Contents
+
+1. [Tutorial](tutorial)
+  1. [Cleanup and extra info](tutorial/t-cleanup-environment.md)
+  1. [Get a Charmed MongoDB up and running](tutorial/t-deploy-mongodb.md)
+  1. [Charmed MongoDB K8s Tutorial](tutorial/t-overview.md)
