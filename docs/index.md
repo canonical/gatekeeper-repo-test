@@ -14,41 +14,6 @@ Charmed MongoDB is an official distribution of MongoDB. It’s an open-source pr
 - [Contribute and report bugs](https://github.com/canonical/mongodb-k8s-operator)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Contents
 
 1. [Tutorial](tutorial)
