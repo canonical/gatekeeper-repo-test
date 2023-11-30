@@ -9,12 +9,7 @@ import typing
 
 from . import constants, types_
 from .discourse import Discourse
-from .exceptions import (
-    DiscourseError,
-    NavigationTableParseError,
-    PagePermissionError,
-    ServerError,
-)
+from .exceptions import DiscourseError, NavigationTableParseError, PagePermissionError, ServerError
 
 _WHITESPACE = r"\s*"
 _TABLE_HEADER_REGEX = (
