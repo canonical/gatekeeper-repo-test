@@ -62,12 +62,12 @@ jobs:
         id: prepare-stage
         run: |
           PYTHONPATH=$(pwd) python3 tests/e2e/reconcile.py --action prepare --github-token  ${{ secrets.GITHUB_TOKEN }} '{}' '${{ steps.configuration.outputs.discourse }}'
-          
+
           echo $(git log | head -n 1)
-          
+
           echo "Tags"
           echo $(git tag -l | cat)
-          
+
           COMMIT_SHA=$(git log | head -n 1 | sed -En "s/commit\ //p")
           echo "commit_sha=$COMMIT_SHA" >> "$GITHUB_OUTPUT"
 
@@ -88,7 +88,7 @@ jobs:
           echo $(git log | head -n 1)
           PYTHONPATH=$(pwd) python3 tests/e2e/reconcile.py --action check-draft --github-token  ${{ secrets.GITHUB_TOKEN }} --action-kwargs '{"expected_url_results": []}' '${{ steps. dry-create.outputs.topics }}' '${{ steps.configuration.outputs.discourse }}'
           echo $(git log | head -n 1)
-          
+
           echo "Tags"
           echo $(git tag -l | cat)
 
@@ -109,7 +109,7 @@ jobs:
           echo $(git log | head -n 1)
           PYTHONPATH=$(pwd) python3 tests/e2e/reconcile.py --action check-create --github-token  ${{ secrets.GITHUB_TOKEN }} --action-kwargs '{"expected_url_results": ["success", "success", "success"]}' '${{ steps.create.outputs.topics }}' '${{ steps.configuration.outputs.discourse }}'
           echo $(git log | head -n 1)
-          
+
           echo "Tags"
           echo $(git tag -l | cat)
 
@@ -151,8 +151,8 @@ jobs:
         run: |
           GITHUB_TOKEN='${{ secrets.GITHUB_TOKEN }}'
           REPO='${{ github.repository }}'
-          
-          # This should also merge the PR, and the next action run should automatically close the PR      
+
+          # This should also merge the PR, and the next action run should automatically close the PR
           PYTHONPATH=$(pwd) python3 tests/e2e/reconcile.py --action check-update --github-token  ${{ secrets.GITHUB_TOKEN }} --action-kwargs "{\"expected_url_results\": [\"success\", \"success\", \"success\"]}" '${{ steps.create.outputs.topics }}' '${{ steps.configuration.outputs.discourse }}'
 
           echo $(git log | head -n 1)
@@ -160,7 +160,7 @@ jobs:
           echo "commit_sha=$COMMIT_SHA" >> "$GITHUB_OUTPUT"
 
           echo "Tags"
-          echo $(git tag -l | cat)   
+          echo $(git tag -l | cat)
 
       - name: Close Merged PR
         id: update-closed
@@ -178,9 +178,9 @@ jobs:
         id: alternate-doc-deleted
         run: |
           rm docs/alternate-doc.md
-          git add -u 
+          git add -u
           git commit -m "Delete docs/alternate_doc.md"
-          
+
           echo $(git log | head -n 1)
           COMMIT_SHA=$(git log | head -n 1 | sed -En "s/commit\ //p")
           echo "commit_sha=$COMMIT_SHA" >> "$GITHUB_OUTPUT"
@@ -206,10 +206,10 @@ jobs:
         id: doc-deleted
         run: |
           rm docs/doc.md
-          
-          git add -u 
+
+          git add -u
           git commit -m "Delete docs/alternate_doc.md"
-          
+
           echo $(git log | head -n 1)
           COMMIT_SHA=$(git log | head -n 1 | sed -En "s/commit\ //p")
           echo "commit_sha=$COMMIT_SHA" >> "$GITHUB_OUTPUT"
