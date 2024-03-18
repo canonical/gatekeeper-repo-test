@@ -189,7 +189,7 @@ jobs:
 
       - name: Delete topics disabled self test
         id: e2e-test-delete-topics
-        uses: canonical/discourse-gatekeeper@investigate-e2e-test-failure
+        uses: canonical/discourse-gatekeeper@main
         with:
           delete_topics: false
           discourse_host: discourse.charmhub.io
