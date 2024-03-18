@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       # Each job has to have this configuration because secrets can be passed through the output of
-      # another job
+      # another job 
       - name: Generate discourse configuration
         id: configuration
         run: |
