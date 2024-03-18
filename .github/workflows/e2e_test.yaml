@@ -178,7 +178,8 @@ jobs:
         id: alternate-doc-deleted
         run: |
           rm docs/alternate-doc.md
-          sed -i '/alternate-doc.md/d' docs/index.md
+          cat docs/index.md
+          sed -i '/alternate-doc/d' docs/index.md
           cat docs/index.md
           git add -u
           git commit -m "Delete docs/alternate_doc.md"
