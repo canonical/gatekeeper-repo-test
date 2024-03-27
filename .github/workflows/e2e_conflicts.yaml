@@ -54,12 +54,15 @@ jobs:
           git rev-parse HEAD
 
           if [ ! -d "./${{ matrix.charm-dir }}" ]; then
-              rm metadata.yaml
               mkdir -p "${{ matrix.charm-dir }}"
               # Create charmcraft.yaml file
               echo "name: $(echo ${{ github.repository }} | sed 's:.*/::')-test" > "${{ matrix.charm-dir }}"/charmcraft.yaml
               echo "links:" >> "${{ matrix.charm-dir }}"/charmcraft.yaml
               echo "  documentation: https://discourse.charmhub.io/t/charmed-mongodb-k8s-documentation/9731" >> "${{ matrix.charm-dir }}"/charmcraft.yaml
+              git rm metadata.yaml
+              git add charm/charmcraft.yaml
+              git commit -m " from metadata to charmcraft and charmdir"
+              git push
           fi
           
           echo $(git log | head -n 1)
