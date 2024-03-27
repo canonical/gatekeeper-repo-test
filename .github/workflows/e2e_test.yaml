@@ -9,6 +9,12 @@ jobs:
     concurrency: e2e-tests
     permissions: write-all
     runs-on: ubuntu-22.04
+    strategy:
+      max-parallel: 1
+      matrix:
+        charm-dir:
+          -
+          - charm
     steps:
       # Each job has to have this configuration because secrets can be passed through the output of
       # another job
@@ -31,10 +37,13 @@ jobs:
 
       - name: Prepare for action to run
         run: |
+          set -x
           # Create metadata.yaml file
-          echo "name: $(echo ${{ github.repository }} | sed 's:.*/::')-test" > metadata.yaml
+          mkdir -p "${{ matrix.charm-dir }}"
+          echo "name: $(echo ${{ github.repository }} | sed 's:.*/::')-test" > ./${{ matrix.charm-dir }}/metadata.yaml
+          
           # Create documentation index file
-          mkdir docs
+          mkdir ./${{ matrix.charm-dir }}/docs
           # need some values in the content that change on every commit as discourse looks for file
           # similarity
           echo -e "# Charm Upload Automation Reconcile Test Index Title some uuid: $(uuidgen)\n" \
@@ -43,26 +52,26 @@ jobs:
             "branch: ${{ github.head_ref }}, " \
             "commit sha: ${{ github.sha }}, " \
             "some uuid: $(uuidgen)" \
-            > docs/index.md
+            > ./${{ matrix.charm-dir }}/docs/index.md
           echo -e "# Charm Upload Automation Reconcile Test Documentation Title some uuid: $(uuidgen)\n" \
             "placeholder documentation content for testing, " \
             "repository: ${{ github.repository }}, " \
             "branch: ${{ github.head_ref }}, " \
             "commit sha: ${{ github.sha }}, " \
             "some uuid: $(uuidgen)" \
-            > docs/doc.md
+            > ./${{ matrix.charm-dir }}/docs/doc.md
           echo -e "# Charm Upload Automation Reconcile Test Documentation Alternate Title some uuid: $(uuidgen)\n" \
             "placeholder documentation alternate content for testing, " \
             "repository: ${{ github.repository }}, " \
             "branch: ${{ github.head_ref }}, " \
             "commit sha: ${{ github.sha }}, " \
             "some uuid: $(uuidgen)" \
-            > docs/alternate_doc.md
+            > ./${{ matrix.charm-dir }}/docs/alternate_doc.md
 
       - name: Prepare stage
         id: prepare-stage
         run: |
-          PYTHONPATH=$(pwd) python3 tests/e2e/reconcile.py --action prepare --github-token  ${{ secrets.GITHUB_TOKEN }} '{}' '${{ steps.configuration.outputs.discourse }}'
+          PYTHONPATH=$(pwd) python3 tests/e2e/reconcile.py --charm-dir "./${{ matrix.charm-dir }}" --action prepare --github-token  ${{ secrets.GITHUB_TOKEN }} '{}' '${{ steps.configuration.outputs.discourse }}'
 
           echo $(git log | head -n 1)
 
@@ -87,7 +96,7 @@ jobs:
         run: |
           echo '${{ steps.dry-create.outputs.topics }}'
           echo $(git log | head -n 1)
-          PYTHONPATH=$(pwd) python3 tests/e2e/reconcile.py --action check-draft --github-token  ${{ secrets.GITHUB_TOKEN }} --action-kwargs '{"expected_url_results": []}' '${{ steps. dry-create.outputs.topics }}' '${{ steps.configuration.outputs.discourse }}'
+          PYTHONPATH=$(pwd) python3 tests/e2e/reconcile.py --charm-dir "./${{ matrix.charm-dir }}" --action check-draft --github-token  ${{ secrets.GITHUB_TOKEN }} --action-kwargs '{"expected_url_results": []}' '${{ steps. dry-create.outputs.topics }}' '${{ steps.configuration.outputs.discourse }}'
           echo $(git log | head -n 1)
 
           echo "Tags"
@@ -108,7 +117,7 @@ jobs:
           echo '${{ steps.create.outputs.index_url }}'
           echo '${{ steps.create.outputs.topics }}'
           echo $(git log | head -n 1)
-          PYTHONPATH=$(pwd) python3 tests/e2e/reconcile.py --action check-create --github-token  ${{ secrets.GITHUB_TOKEN }} --action-kwargs '{"expected_url_results": ["success", "success", "success"]}' '${{ steps.create.outputs.topics }}' '${{ steps.configuration.outputs.discourse }}'
+          PYTHONPATH=$(pwd) python3 tests/e2e/reconcile.py --charm-dir "./${{ matrix.charm-dir }}" --action check-create --github-token  ${{ secrets.GITHUB_TOKEN }} --action-kwargs '{"expected_url_results": ["success", "success", "success"]}' '${{ steps.create.outputs.topics }}' '${{ steps.configuration.outputs.discourse }}'
           echo $(git log | head -n 1)
 
           echo "Tags"
@@ -117,8 +126,8 @@ jobs:
       - name: Add docs key to metadata
         id: add-docs-key
         run: |
-          echo "docs: ${{ steps.create.outputs.index_url }}" >> metadata.yaml
-          cat metadata.yaml
+          echo "docs: ${{ steps.create.outputs.index_url }}" >> ./"${{ matrix.charm-dir }}"/charmcraft.yaml
+          cat ./${{ matrix.charm-dir }}/metadata.yaml
           git status
           git add -u
           git commit -m "Update metadata"
@@ -154,7 +163,7 @@ jobs:
           REPO='${{ github.repository }}'
 
           # This should also merge the PR, and the next action run should automatically close the PR
-          PYTHONPATH=$(pwd) python3 tests/e2e/reconcile.py --action check-update --github-token  ${{ secrets.GITHUB_TOKEN }} --action-kwargs "{\"expected_url_results\": [\"success\", \"success\", \"success\"]}" '${{ steps.create.outputs.topics }}' '${{ steps.configuration.outputs.discourse }}'
+          PYTHONPATH=$(pwd) python3 tests/e2e/reconcile.py --charm-dir "./${{ matrix.charm-dir }}" --action check-update --github-token  ${{ secrets.GITHUB_TOKEN }} --action-kwargs "{\"expected_url_results\": [\"success\", \"success\", \"success\"]}" '${{ steps.create.outputs.topics }}' '${{ steps.configuration.outputs.discourse }}'
 
           echo $(git log | head -n 1)
           COMMIT_SHA=$(git log | head -n 1 | sed -En "s/commit\ //p")
@@ -178,8 +187,8 @@ jobs:
       - name: Delete the alternate doc with delete_topics disabled
         id: alternate-doc-deleted
         run: |
-          rm docs/alternate-doc.md
-          sed -i '/alternate-doc/d' docs/index.md
+          rm ./${{ matrix.charm-dir }}/docs/alternate-doc.md
+          sed -i '/alternate-doc/d' ./${{ matrix.charm-dir }}/docs/index.md
           git add -u
           git commit -m "Delete docs/alternate_doc.md"
 
@@ -203,12 +212,12 @@ jobs:
         run: echo '${{ steps.e2e-test-delete-topics.outputs.topics }}'
       - name: Check delete topics disabled
         run: |
-          PYTHONPATH=$(pwd) python3 tests/e2e/reconcile.py --action check-delete-topics --github-token  ${{ secrets.GITHUB_TOKEN }} --action-kwargs '{"expected_url_results": ["success", "skip", "success"]}' '${{ steps.e2e-test-delete-topics.outputs.topics }}' '${{ steps.configuration.outputs.discourse }}'
+          PYTHONPATH=$(pwd) python3 tests/e2e/reconcile.py --charm-dir "./${{ matrix.charm-dir }}" --action check-delete-topics --github-token  ${{ secrets.GITHUB_TOKEN }} --action-kwargs '{"expected_url_results": ["success", "skip", "success"]}' '${{ steps.e2e-test-delete-topics.outputs.topics }}' '${{ steps.configuration.outputs.discourse }}'
       - name: Delete the doc with delete_topics enabled
         id: doc-deleted
         run: |
-          rm docs/doc.md
-          sed -i '/doc/d' docs/index.md
+          rm ./${{ matrix.charm-dir }}/docs/doc.md
+          sed -i '/doc/d' ./${{ matrix.charm-dir }}/docs/index.md
 
           git add -u
           git commit -m "Delete docs/alternate_doc.md"
@@ -231,10 +240,10 @@ jobs:
         run: echo '${{ steps.e2e-test-delete.outputs.topics }}'
       - name: Check delete topics enabled
         run: |
-          PYTHONPATH=$(pwd) python3 tests/e2e/reconcile.py --action check-delete --github-token  ${{ secrets.GITHUB_TOKEN }} --action-kwargs '{"expected_url_results": ["success", "success"]}' '${{ steps.e2e-test-delete.outputs.topics }}' '${{ steps.configuration.outputs.discourse }}'
+          PYTHONPATH=$(pwd) python3 tests/e2e/reconcile.py --charm-dir "./${{ matrix.charm-dir }}" --action check-delete --github-token  ${{ secrets.GITHUB_TOKEN }} --action-kwargs '{"expected_url_results": ["success", "success"]}' '${{ steps.e2e-test-delete.outputs.topics }}' '${{ steps.configuration.outputs.discourse }}'
       - name: Clean up
         if: always()
         run: |
           GITHUB_TOKEN='${{ secrets.GITHUB_TOKEN }}'
           REPO='${{ github.repository }}'
-          PYTHONPATH=$(pwd) python3 tests/e2e/reconcile.py --action cleanup --github-token  ${{ secrets.GITHUB_TOKEN }} --action-kwargs "{\"github_token\": \"$GITHUB_TOKEN\", \"repo\": \"$REPO\"}" '${{ steps.create.outputs.topics }}' '${{ steps.configuration.outputs.discourse }}'
+          PYTHONPATH=$(pwd) python3 tests/e2e/reconcile.py --charm-dir "./${{ matrix.charm-dir }}" --action cleanup --github-token  ${{ secrets.GITHUB_TOKEN }} --action-kwargs "{\"github_token\": \"$GITHUB_TOKEN\", \"repo\": \"$REPO\"}" '${{ steps.create.outputs.topics }}' '${{ steps.configuration.outputs.discourse }}'

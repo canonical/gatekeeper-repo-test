@@ -19,10 +19,6 @@ jobs:
           -
           - charm
     steps:
-      - name: Step info
-        id: stepinfo
-        run: |
-          echo "Step charm-dir" -${{ matrix.charm-dir }}-
       # Each job has to have this configuration because secrets can be passed through the output of
       # another job
       - name: Generate discourse configuration

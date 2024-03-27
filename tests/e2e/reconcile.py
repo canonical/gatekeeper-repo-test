@@ -67,13 +67,14 @@ def main() -> None:
         "--action-kwargs", help="Arguments for the action as a JSON mapping", default="{}"
     )
     parser.add_argument("--github-token", help="Github token to setup repository")
+    parser.add_argument("--charm-dir", help="Charm dir", default="")
     args = parser.parse_args()
     urls_with_actions = json.loads(args.urls_with_actions)
     discourse_config = json.loads(args.discourse_config)
     action_kwargs = json.loads(args.action_kwargs)
 
     discourse = create_discourse(**discourse_config)
-    repository = create_repository_client(args.github_token, pathlib.Path.cwd())
+    repository = create_repository_client(args.github_token, pathlib.Path.cwd(), charm_dir=args.charm_dir)
 
     match args.action:
         case Action.PREPARE.value:
