@@ -66,10 +66,11 @@ jobs:
           dry_run: true
           base_branch: "tests/base"
           commit_sha: ${{  steps.prepare-stage.outputs.commit_sha }}
+          charm_dir:  ${{ matrix.charm-dir }}
 
-      - name: Tmate debugging session (gh-hosted)
-        uses: mxschmitt/action-tmate@v3
-        timeout-minutes: 30
+      # - name: Tmate debugging session (gh-hosted)
+      #   uses: mxschmitt/action-tmate@v3
+      #   timeout-minutes: 30
 
       - name: Check creation
         run: |
@@ -109,6 +110,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           base_branch: "tests/base"
           commit_sha: ${{  steps.merge-import.outputs.commit_sha }}
+          charm_dir:  ${{ matrix.charm-dir }}
 
       - name: Create conflict
         id: create-conflict
@@ -132,6 +134,7 @@ jobs:
           dry_run: true
           base_branch: "tests/base"
           commit_sha: ${{  steps.create-conflict.outputs.commit_sha }}
+          charm_dir:  ${{ matrix.charm-dir }}
 
       - name: Resolve conflict
         id: resolve-conflict
@@ -154,6 +157,7 @@ jobs:
           dry_run: true
           base_branch: "tests/base"
           commit_sha: ${{  steps.resolve-conflict.outputs.commit_sha }}
+          charm_dir:  ${{ matrix.charm-dir }}
 
       - name: Merge Feature Branch
         id: merge-feature
@@ -175,6 +179,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           base_branch: "tests/base"
           commit_sha: ${{  steps.merge-feature.outputs.commit_sha }}
+          charm_dir:  ${{ matrix.charm-dir }}
 
       - name: Cleanup
         run: |
