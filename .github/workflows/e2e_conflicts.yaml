@@ -19,6 +19,10 @@ jobs:
           -
           - charm
     steps:
+      - name: Step info
+        id: stepinfo
+        run: |
+          echo "Step charm-dir" ${{ matrix.charm-dir }}
       # Each job has to have this configuration because secrets can be passed through the output of
       # another job
       - name: Generate discourse configuration
@@ -62,6 +66,10 @@ jobs:
           dry_run: true
           base_branch: "tests/base"
           commit_sha: ${{  steps.prepare-stage.outputs.commit_sha }}
+
+      - name: Tmate debugging session (gh-hosted)
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 30
 
       - name: Check creation
         run: |
