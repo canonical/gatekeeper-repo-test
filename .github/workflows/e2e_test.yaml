@@ -126,7 +126,7 @@ jobs:
       - name: Add docs key to metadata
         id: add-docs-key
         run: |
-          echo "docs: ${{ steps.create.outputs.index_url }}" >> ./"${{ matrix.charm-dir }}"/charmcraft.yaml
+          echo "docs: ${{ steps.create.outputs.index_url }}" >> ./${{ matrix.charm-dir }}/metadata.yaml
           cat ./${{ matrix.charm-dir }}/metadata.yaml
           git status
           git add -u
