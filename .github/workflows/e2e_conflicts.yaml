@@ -16,7 +16,7 @@ jobs:
       max-parallel: 1
       matrix:
         charm-dir:
-          # -
+          -
           - charm
     steps:
       - name: Step info
