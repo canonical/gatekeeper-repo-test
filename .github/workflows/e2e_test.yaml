@@ -38,6 +38,7 @@ jobs:
       - name: Prepare for action to run
         run: |
           set -x
+          rm metadata.yaml
           # Create metadata.yaml file
           [ -d "./${{ matrix.charm-dir }}" ] || mkdir "${{ matrix.charm-dir }}"
           echo "name: $(echo ${{ github.repository }} | sed 's:.*/::')-test" > ./${{ matrix.charm-dir }}/metadata.yaml
@@ -92,6 +93,8 @@ jobs:
           dry_run: true
           base_branch: "tests/base"
           commit_sha: ${{  steps.prepare-stage.outputs.commit_sha }}
+          charm_dir:  ${{ matrix.charm-dir }}
+
       - name: Check dry creation
         run: |
           echo '${{ steps.dry-create.outputs.topics }}'
@@ -112,6 +115,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           base_branch: "tests/base"
           commit_sha: ${{  steps.prepare-stage.outputs.commit_sha }}
+          charm_dir:  ${{ matrix.charm-dir }}
+
       - name: Check creation
         run: |
           echo '${{ steps.create.outputs.index_url }}'
@@ -149,6 +154,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           base_branch: "tests/base"
           commit_sha: ${{  steps.add-docs-key.outputs.commit_sha }}
+          charm_dir:  ${{ matrix.charm-dir }}
 
       - name: Show pages
         run: |
@@ -182,7 +188,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           base_branch: "tests/base"
           commit_sha: ${{  steps.check-update.outputs.commit_sha }}
-
+          charm_dir:  ${{ matrix.charm-dir }}
 
       - name: Delete the alternate doc with delete_topics disabled
         id: alternate-doc-deleted
@@ -207,6 +213,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           base_branch: "tests/base"
           commit_sha: ${{  steps.alternate-doc-deleted.outputs.commit_sha }}
+          charm_dir:  ${{ matrix.charm-dir }}
 
       - name: Show pages
         run: echo '${{ steps.e2e-test-delete-topics.outputs.topics }}'
@@ -236,6 +243,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           base_branch: "tests/base"
           commit_sha: ${{  steps.doc-deleted.outputs.commit_sha }}
+          charm_dir:  ${{ matrix.charm-dir }}
+
       - name: Show pages
         run: echo '${{ steps.e2e-test-delete.outputs.topics }}'
       - name: Check delete topics enabled
