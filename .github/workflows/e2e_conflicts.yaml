@@ -12,6 +12,12 @@ jobs:
     concurrency: e2e-tests
     permissions: write-all
     runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        charm-dir:
+          -
+          - charm
+        max-parallel: 1
     steps:
       # Each job has to have this configuration because secrets can be passed through the output of
       # another job
