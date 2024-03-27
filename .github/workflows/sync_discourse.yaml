@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Publish documentation
-        uses: canonical/discourse-gatekeeper@main
+        uses: canonical/discourse-gatekeeper@ISD-1620-NetBox-Build-all-missing-documentation-required-for-a-production-charm
 
         id: publishDocumentation
         with:
