@@ -60,6 +60,7 @@ jobs:
               echo "links:" >> "${{ matrix.charm-dir }}"/charmcraft.yaml
               echo "  documentation: https://discourse.charmhub.io/t/charmed-mongodb-k8s-documentation/9731" >> "${{ matrix.charm-dir }}"/charmcraft.yaml
               git rm metadata.yaml
+              git rm charmcraft.yaml
               git add charm/charmcraft.yaml
               git commit -m " from metadata to charmcraft and charmdir"
               git push
