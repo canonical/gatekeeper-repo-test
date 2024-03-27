@@ -1,2 +1,7 @@
 # Charm Upload Automation Reconcile Test Index Title some uuid: cbaa8bea-7a00-4f90-996e-2bf304eec518
  placeholder index content for testing,  repository: canonical/gatekeeper-repo-test,  branch: paas-app-charmer,  commit sha: 6ef0f0501b3b931ac560132a489c61379acf9ac1,  some uuid: 0d08fff2-f85c-491d-a282-b3dd366e2c80
+
+# Contents
+
+1. [Charm Upload Automation Reconcile Test Documentation Alternate Title some uuid: a499b924-6a0b-4ac3-b77e-cc7403845e39](alternate-doc.md)
+1. [Charm Upload Automation Reconcile Test Documentation Title some uuid: 89dd3eb6-a801-4eee-8a1f-e7deb39d3c16](doc.md)
