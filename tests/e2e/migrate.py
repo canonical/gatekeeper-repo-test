@@ -76,7 +76,7 @@ def main() -> None:
     discourse_config = json.loads(args.discourse_config)
 
     discourse = create_discourse(**discourse_config)
-    repository = create_repository_client(args.github_token, Path.cwd())
+    repository = create_repository_client(args.github_token, Path.cwd(), charm_dir=args.charm_dir)
 
     match args.action:
         case Action.PREPARE.value:
