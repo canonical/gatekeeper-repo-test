@@ -38,10 +38,11 @@ jobs:
       - name: Prepare for action to run
         run: |
           set -x
-          rm metadata.yaml
+          git rm metadata.yaml
           # Create metadata.yaml file
           [ -d "./${{ matrix.charm-dir }}" ] || mkdir "${{ matrix.charm-dir }}"
           echo "name: $(echo ${{ github.repository }} | sed 's:.*/::')-test" > ./${{ matrix.charm-dir }}/metadata.yaml
+          git add ./${{ matrix.charm-dir }}/metadata.yaml
           
           # Create documentation index file
           mkdir ./${{ matrix.charm-dir }}/docs
