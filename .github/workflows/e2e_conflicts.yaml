@@ -16,7 +16,7 @@ jobs:
       max-parallel: 1
       matrix:
         charm-dir:
-          -
+          # -
           - charm
     steps:
       - name: Step info
@@ -47,8 +47,20 @@ jobs:
         run: |
           set -x
           git branch
+          git rev-parse HEAD
           
           PYTHONPATH=$(pwd) python3 tests/e2e/migrate.py --action prepare --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
+          git branch
+          git rev-parse HEAD
+
+          if [ ! -d "./${{ matrix.charm-dir }}" ]; then
+              rm metadata.yaml
+              mkdir -p "${{ matrix.charm-dir }}"
+              # Create charmcraft.yaml file
+              echo "name: $(echo ${{ github.repository }} | sed 's:.*/::')-test" > "${{ matrix.charm-dir }}"/charmcraft.yaml
+              echo "links:" >> "${{ matrix.charm-dir }}"/charmcraft.yaml
+              echo "  documentation: https://discourse.charmhub.io/t/charmed-mongodb-k8s-documentation/9731" >> "${{ matrix.charm-dir }}"/charmcraft.yaml
+          fi
           
           echo $(git log | head -n 1)
           
@@ -58,13 +70,6 @@ jobs:
           COMMIT_SHA=$(git log | head -n 1 | sed -En "s/commit\ //p")
           echo "commit_sha=$COMMIT_SHA" >> "$GITHUB_OUTPUT"
 
-          if [ ! -d "./${{ matrix.charm-dir }}" ]; then
-              mkdir -p "${{ matrix.charm-dir }}"
-              # Create charmcraft.yaml file
-              echo "name: $(echo ${{ github.repository }} | sed 's:.*/::')-test" > "${{ matrix.charm-dir }}"/charmcraft.yaml
-              echo "links:" >> "${{ matrix.charm-dir }}"/charmcraft.yaml
-              echo "  documentation: https://discourse.charmhub.io/t/charmed-mongodb-k8s-documentation/9731" >> "${{ matrix.charm-dir }}"/charmcraft.yaml
-          fi
 
       - name: Import Documentation
         id: import
