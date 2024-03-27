@@ -9,7 +9,17 @@ jobs:
     concurrency: e2e-tests
     permissions: write-all
     runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        charm-dir:
+          -
+          - charm
+        max-parallel: 1
     steps:
+      - name: Step info
+        id: stepinfo
+        run: |
+          echo "Step charm-dir" ${{ matrix.charm-dir }}
       # Each job has to have this configuration because secrets can be passed through the output of
       # another job
       - name: Generate discourse configuration
@@ -58,10 +68,6 @@ jobs:
             "commit sha: ${{ github.sha }}, " \
             "some uuid: $(uuidgen)" \
             > docs/alternate_doc.md
-
-      - name: Tmate debugging session (gh-hosted)
-        uses: mxschmitt/action-tmate@v3
-        timeout-minutes: 30
 
       - name: Prepare stage
         id: prepare-stage
