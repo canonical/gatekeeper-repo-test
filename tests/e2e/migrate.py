@@ -179,7 +179,7 @@ def get_test_topic_file(repository: Client, discourse: Discourse) -> Tuple[Path,
     """
     index = index_module.get(
         metadata=repository.metadata,
-        base_path=repository.base_path,
+        docs_path=repository.docs_path,
         server_client=discourse,
     )
 
@@ -217,7 +217,9 @@ def create_conflict(repository: Client, discourse: Discourse) -> bool:
 
     repository.create_branch(E2E_BRANCH, E2E_BASE).switch(E2E_BRANCH)
     file_path.write_text(source + "\n\n[E2E Test] Conflict in PR", encoding="utf-8")
-    repository.update_branch("Modification of documentation", force=True)
+    repository.update_branch(
+        "Modification of documentation", force=True, directory=repository.docs_path
+    )
 
     discourse.update_topic(
         url=topic_url,
@@ -246,7 +248,7 @@ def resolve_conflict(repository: Client, discourse: Discourse) -> bool:
     )
 
     file_path.write_text(source, encoding="utf-8")
-    repository.update_branch("Conflict resolution", force=True)
+    repository.update_branch("Conflict resolution", force=True, directory=repository.docs_path)
 
     discourse.update_topic(
         url=topic_url, content=source, edit_reason="Conflict resolution in Discourse"
