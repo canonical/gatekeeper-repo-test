@@ -10,11 +10,11 @@ jobs:
     permissions: write-all
     runs-on: ubuntu-22.04
     strategy:
+      max-parallel: 1
       matrix:
         charm-dir:
           -
           - charm
-        max-parallel: 1
     steps:
       - name: Step info
         id: stepinfo
