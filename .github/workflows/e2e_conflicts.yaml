@@ -16,7 +16,7 @@ jobs:
       max-parallel: 1
       matrix:
         charm-dir:
-          # -
+          -
           - charm
     steps:
       - name: Step info
@@ -115,11 +115,6 @@ jobs:
           
           COMMIT_SHA=$(git log | head -n 1 | sed -En "s/commit\ //p")
           echo "commit_sha=$COMMIT_SHA" >> "$GITHUB_OUTPUT"
-
-
-      # - name: Tmate debugging session (gh-hosted)
-      #   uses: mxschmitt/action-tmate@v3
-      #   timeout-minutes: 30
 
       - name: Release Pipeline Documentation
         id: release-import

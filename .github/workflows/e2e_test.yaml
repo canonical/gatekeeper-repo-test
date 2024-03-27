@@ -2,7 +2,7 @@ name: E2E Pushing Tests
 
 on:
   workflow_dispatch:
-  # pull_request:
+  pull_request:
 
 jobs:
   e2e-tests-reconcile:
