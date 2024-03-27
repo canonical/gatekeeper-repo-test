@@ -77,10 +77,6 @@ jobs:
           commit_sha: ${{  steps.prepare-stage.outputs.commit_sha }}
           charm_dir:  ${{ matrix.charm-dir }}
 
-      - name: Tmate debugging session (gh-hosted)
-        uses: mxschmitt/action-tmate@v3
-        timeout-minutes: 30
-
       - name: Check creation
         run: |
           echo '${{ steps.import.outputs.pr_link }}'
@@ -108,6 +104,11 @@ jobs:
           
           COMMIT_SHA=$(git log | head -n 1 | sed -En "s/commit\ //p")
           echo "commit_sha=$COMMIT_SHA" >> "$GITHUB_OUTPUT"
+
+
+      - name: Tmate debugging session (gh-hosted)
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 30
 
       - name: Release Pipeline Documentation
         id: release-import
