@@ -2,4 +2,3 @@
  placeholder index content for testing,  repository: canonical/gatekeeper-repo-test,  branch: paas-app-charmer,  commit sha: 6688db65c354bc94571c5ea2ca5beca672f04e98,  some uuid: fafde3fc-aa4b-43c0-8203-017a7d67d602
 
 # Contents
-
