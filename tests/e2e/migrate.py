@@ -13,7 +13,7 @@ from typing import Tuple
 
 from src.gatekeeper import index as index_module
 from src.gatekeeper import navigation_table
-from src.gatekeeper.constants import DOCUMENTATION_FOLDER_NAME, DOCUMENTATION_TAG
+from src.gatekeeper.constants import DOCUMENTATION_TAG
 from src.gatekeeper.discourse import Discourse, create_discourse
 from src.gatekeeper.repository import (
     ACTIONS_PULL_REQUEST_TITLE,
@@ -191,7 +191,7 @@ def get_test_topic_file(repository: Client, discourse: Discourse) -> Tuple[Path,
 
     row = [row for row in table_rows if "t-overview" in row.path][0]
 
-    file_path = Path(".").joinpath(DOCUMENTATION_FOLDER_NAME, *row.path[:-1], f"{row.path[-1]}.md")
+    file_path = repository.docs_path.joinpath(*row.path[:-1], f"{row.path[-1]}.md")
 
     if not row.navlink.link:
         raise ValueError("Link in the row of the navigation table must be populated.")

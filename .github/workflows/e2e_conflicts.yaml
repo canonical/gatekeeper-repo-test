@@ -49,7 +49,7 @@ jobs:
           git branch
           git rev-parse HEAD
           
-          PYTHONPATH=$(pwd) python3 tests/e2e/migrate.py --action prepare --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
+          PYTHONPATH=$(pwd) python3 tests/e2e/migrate.py --charm-dir "./${{ matrix.charm-dir }}" --action prepare --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
           git branch
           git rev-parse HEAD
 
@@ -93,7 +93,7 @@ jobs:
           echo '${{ steps.import.outputs.pr_link }}'
           echo '${{ steps.import.outputs.pr_action }}'
           echo $(git log | head -n 1)
-          PYTHONPATH=$(pwd) python3  tests/e2e/migrate.py  --action check-pull-request --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
+          PYTHONPATH=$(pwd) python3  tests/e2e/migrate.py --charm-dir "./${{ matrix.charm-dir }}"  --action check-pull-request --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
           echo $(git log | head -n 1)
           
           echo "Tags"
@@ -117,9 +117,9 @@ jobs:
           echo "commit_sha=$COMMIT_SHA" >> "$GITHUB_OUTPUT"
 
 
-      - name: Tmate debugging session (gh-hosted)
-        uses: mxschmitt/action-tmate@v3
-        timeout-minutes: 30
+      # - name: Tmate debugging session (gh-hosted)
+      #   uses: mxschmitt/action-tmate@v3
+      #   timeout-minutes: 30
 
       - name: Release Pipeline Documentation
         id: release-import
@@ -163,7 +163,7 @@ jobs:
         run: |
           if [ ${{ steps.conflict.outcome }}  != "failure" ]; then exit 1; fi
           
-          PYTHONPATH=$(pwd) python3  tests/e2e/migrate.py  --action resolve-conflict --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
+          PYTHONPATH=$(pwd) python3  tests/e2e/migrate.py --charm-dir "./${{ matrix.charm-dir }}"  --action resolve-conflict --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
 
           COMMIT_SHA=$(git log | head -n 1 | sed -En "s/commit\ //p")
           echo "commit_sha=$COMMIT_SHA" >> "$GITHUB_OUTPUT"
@@ -187,7 +187,7 @@ jobs:
           if [ ${{ steps.feature-check.outcome }}  != "success" ]; then exit 1; fi
           if [ ${{ steps.feature-check.outputs.pr_action }}  != "opened" ]; then exit 1; fi
           
-          PYTHONPATH=$(pwd) python3  tests/e2e/migrate.py  --action merge-feature --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
+          PYTHONPATH=$(pwd) python3  tests/e2e/migrate.py --charm-dir "./${{ matrix.charm-dir }}"  --action merge-feature --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
           COMMIT_SHA=$(git log | head -n 1 | sed -En "s/commit\ //p")
           echo "commit_sha=$COMMIT_SHA" >> "$GITHUB_OUTPUT"
 
@@ -207,4 +207,4 @@ jobs:
         run: |
           if [ ${{ steps.release-feature.outputs.pr_action }}  != "closed" ]; then exit 1; fi
 
-          PYTHONPATH=$(pwd) python3  tests/e2e/migrate.py  --action cleanup --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
+          PYTHONPATH=$(pwd) python3  tests/e2e/migrate.py --charm-dir "./${{ matrix.charm-dir }}"  --action cleanup --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
