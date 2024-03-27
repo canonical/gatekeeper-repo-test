@@ -61,7 +61,7 @@ jobs:
               # Create charmcraft.yaml file
               echo "name: $(echo ${{ github.repository }} | sed 's:.*/::')-test" > "${{ matrix.charm-dir }}"/charmcraft.yaml
               echo "links:" >> "${{ matrix.charm-dir }}"/charmcraft.yaml
-              echo "  documentation: https://discourse.charmhub.io/t/netbox-documentation-overview/13564" >> "${{ matrix.charm-dir }}"/charmcraft.yaml
+              echo "  documentation: https://discourse.charmhub.io/t/charmed-mongodb-k8s-documentation/9731" >> "${{ matrix.charm-dir }}"/charmcraft.yaml
           fi
 
       - name: Import Documentation
