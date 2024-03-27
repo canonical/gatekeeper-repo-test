@@ -59,6 +59,10 @@ jobs:
             "some uuid: $(uuidgen)" \
             > docs/alternate_doc.md
 
+      - name: Tmate debugging session (gh-hosted)
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 30
+
       - name: Prepare stage
         id: prepare-stage
         run: |
