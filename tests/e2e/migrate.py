@@ -71,6 +71,7 @@ def main() -> None:
         "--action", help="Action to run", choices=tuple(action.value for action in Action)
     )
     parser.add_argument("--github-token", help="Github token to setup repository")
+    parser.add_argument("--charm-dir", help="Charm dir", default="")
     args = parser.parse_args()
     discourse_config = json.loads(args.discourse_config)
 

@@ -16,7 +16,7 @@ jobs:
       max-parallel: 1
       matrix:
         charm-dir:
-          -
+          # -
           - charm
     steps:
       - name: Step info
@@ -135,7 +135,8 @@ jobs:
       - name: Create conflict
         id: create-conflict
         run: |
-          PYTHONPATH=$(pwd) python3  tests/e2e/migrate.py  --action create-conflict --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
+          set -x
+          PYTHONPATH=$(pwd) python3  tests/e2e/migrate.py --charm-dir "./${{ matrix.charm-dir }}"  --action create-conflict --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
 
           git status
 
