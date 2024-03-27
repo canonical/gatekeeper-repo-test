@@ -22,7 +22,7 @@ jobs:
       - name: Step info
         id: stepinfo
         run: |
-          echo "Step charm-dir" ${{ matrix.charm-dir }}
+          echo "Step charm-dir" -${{ matrix.charm-dir }}-
       # Each job has to have this configuration because secrets can be passed through the output of
       # another job
       - name: Generate discourse configuration
@@ -45,6 +45,7 @@ jobs:
       - name: Prepare stage
         id: prepare-stage
         run: |
+          set -x
           PYTHONPATH=$(pwd) python3 tests/e2e/migrate.py --action prepare --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
           
           echo $(git log | head -n 1)
