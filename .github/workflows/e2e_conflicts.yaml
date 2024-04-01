@@ -41,10 +41,6 @@ jobs:
       - name: Prepare stage
         id: prepare-stage
         run: |
-          set -x
-          git branch
-          git rev-parse HEAD
-          
           PYTHONPATH=$(pwd) python3 tests/e2e/migrate.py --charm-dir "./${{ matrix.charm-dir }}" --action prepare --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
           git branch
           git rev-parse HEAD
@@ -58,7 +54,7 @@ jobs:
               git rm metadata.yaml
               git rm charmcraft.yaml
               git add charm/charmcraft.yaml
-              git commit -m " from metadata to charmcraft and charmdir"
+              git commit -m "Use charmcraft.yaml instead of metadata.yaml"
               git push
           fi
           
@@ -69,7 +65,6 @@ jobs:
           
           COMMIT_SHA=$(git log | head -n 1 | sed -En "s/commit\ //p")
           echo "commit_sha=$COMMIT_SHA" >> "$GITHUB_OUTPUT"
-
 
       - name: Import Documentation
         id: import
@@ -127,7 +122,6 @@ jobs:
       - name: Create conflict
         id: create-conflict
         run: |
-          set -x
           PYTHONPATH=$(pwd) python3  tests/e2e/migrate.py --charm-dir "./${{ matrix.charm-dir }}"  --action create-conflict --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
 
           git status

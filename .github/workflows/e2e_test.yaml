@@ -37,7 +37,6 @@ jobs:
 
       - name: Prepare for action to run
         run: |
-          set -x
           git rm metadata.yaml
           # Create metadata.yaml file
           [ -d "./${{ matrix.charm-dir }}" ] || mkdir "${{ matrix.charm-dir }}"
