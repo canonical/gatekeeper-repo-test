@@ -42,12 +42,10 @@ jobs:
         id: prepare-stage
         run: |
           PYTHONPATH=$(pwd) python3 tests/e2e/migrate.py --charm-dir "./${{ matrix.charm-dir }}" --action prepare --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
-          git branch
-          git rev-parse HEAD
-
+          
           if [ ! -d "./${{ matrix.charm-dir }}" ]; then
+              # For this case, charm-dir not the base directory, use charmcraft.yaml instead of metadata.yaml.
               mkdir -p "./${{ matrix.charm-dir }}"
-              # Create charmcraft.yaml file
               echo "name: $(echo ${{ github.repository }} | sed 's:.*/::')-test" > ./${{ matrix.charm-dir }}/charmcraft.yaml
               echo "links:" >> ./${{ matrix.charm-dir }}/charmcraft.yaml
               echo "  documentation: https://discourse.charmhub.io/t/charmed-mongodb-k8s-documentation/9731" >> ./${{ matrix.charm-dir }}/charmcraft.yaml
