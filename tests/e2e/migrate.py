@@ -11,24 +11,18 @@ from enum import Enum
 from pathlib import Path
 from typing import Tuple
 
-from src.gatekeeper import index as index_module
-from src.gatekeeper import navigation_table
-from src.gatekeeper.constants import DOCUMENTATION_FOLDER_NAME, DOCUMENTATION_TAG
-from src.gatekeeper.discourse import Discourse, create_discourse
-from src.gatekeeper.repository import (
+from gatekeeper import index as index_module
+from gatekeeper import navigation_table
+from gatekeeper.constants import DOCUMENTATION_TAG
+from gatekeeper.discourse import Discourse, create_discourse
+from gatekeeper.repository import (
     ACTIONS_PULL_REQUEST_TITLE,
     DEFAULT_BRANCH_NAME,
     Client,
     create_repository_client,
 )
-from tests.e2e.common import (
-    E2E_BASE,
-    E2E_BRANCH,
-    E2E_SETUP,
-    close_pull_request,
-    general_cleanup,
-    with_result,
-)
+
+from tests.e2e.common import E2E_BASE, E2E_BRANCH, close_pull_request, general_cleanup, with_result
 
 
 class Action(str, Enum):
@@ -71,11 +65,12 @@ def main() -> None:
         "--action", help="Action to run", choices=tuple(action.value for action in Action)
     )
     parser.add_argument("--github-token", help="Github token to setup repository")
+    parser.add_argument("--charm-dir", help="Charm dir", default="")
     args = parser.parse_args()
     discourse_config = json.loads(args.discourse_config)
 
     discourse = create_discourse(**discourse_config)
-    repository = create_repository_client(args.github_token, Path.cwd())
+    repository = create_repository_client(args.github_token, Path.cwd(), charm_dir=args.charm_dir)
 
     match args.action:
         case Action.PREPARE.value:
@@ -109,7 +104,7 @@ def prepare(repository: Client, discourse: Discourse) -> bool:
 
     repository._git_repo.git.fetch("--all")  # pylint: disable=W0212
 
-    repository.create_branch(E2E_BASE, E2E_SETUP).switch(E2E_BASE)
+    repository.create_branch(E2E_BASE).switch(E2E_BASE)
 
     repository._git_repo.git.push("-f", "-u", "origin", E2E_BASE)  # pylint: disable=W0212
 
@@ -179,7 +174,7 @@ def get_test_topic_file(repository: Client, discourse: Discourse) -> Tuple[Path,
     """
     index = index_module.get(
         metadata=repository.metadata,
-        base_path=repository.base_path,
+        docs_path=repository.docs_path,
         server_client=discourse,
     )
 
@@ -190,7 +185,7 @@ def get_test_topic_file(repository: Client, discourse: Discourse) -> Tuple[Path,
 
     row = [row for row in table_rows if "t-overview" in row.path][0]
 
-    file_path = Path(".").joinpath(DOCUMENTATION_FOLDER_NAME, *row.path[:-1], f"{row.path[-1]}.md")
+    file_path = repository.docs_path.joinpath(*row.path[:-1], f"{row.path[-1]}.md")
 
     if not row.navlink.link:
         raise ValueError("Link in the row of the navigation table must be populated.")
@@ -217,7 +212,9 @@ def create_conflict(repository: Client, discourse: Discourse) -> bool:
 
     repository.create_branch(E2E_BRANCH, E2E_BASE).switch(E2E_BRANCH)
     file_path.write_text(source + "\n\n[E2E Test] Conflict in PR", encoding="utf-8")
-    repository.update_branch("Modification of documentation", force=True)
+    repository.update_branch(
+        "Modification of documentation", force=True, directory=repository.docs_path
+    )
 
     discourse.update_topic(
         url=topic_url,
@@ -246,7 +243,7 @@ def resolve_conflict(repository: Client, discourse: Discourse) -> bool:
     )
 
     file_path.write_text(source, encoding="utf-8")
-    repository.update_branch("Conflict resolution", force=True)
+    repository.update_branch("Conflict resolution", force=True, directory=repository.docs_path)
 
     discourse.update_topic(
         url=topic_url, content=source, edit_reason="Conflict resolution in Discourse"
