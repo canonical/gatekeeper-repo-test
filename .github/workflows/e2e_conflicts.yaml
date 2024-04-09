@@ -30,6 +30,7 @@ jobs:
       - name: Setup Python
         run: |
           sudo apt update && sudo apt install python3-pip git
+          pip3 install --upgrade pip
           pip3 install -r requirements.txt
 
       - name: Prepare stage

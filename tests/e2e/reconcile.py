@@ -10,16 +10,16 @@ import logging
 import pathlib
 from enum import Enum
 
+from gatekeeper.constants import DOCUMENTATION_TAG
+from gatekeeper.discourse import Discourse, create_discourse
+from gatekeeper.exceptions import DiscourseError
+from gatekeeper.repository import DEFAULT_BRANCH_NAME
+from gatekeeper.repository import Client as RepositoryClient
+from gatekeeper.repository import create_repository_client
 from github.GithubException import UnknownObjectException
 from github.Repository import Repository
 
-from src.gatekeeper.constants import DOCUMENTATION_TAG
-from src.gatekeeper.discourse import Discourse, create_discourse
-from src.gatekeeper.exceptions import DiscourseError
-from src.gatekeeper.repository import DEFAULT_BRANCH_NAME
-from src.gatekeeper.repository import Client as RepositoryClient
-from src.gatekeeper.repository import create_repository_client
-from tests.e2e.common import E2E_BASE, E2E_SETUP, close_pull_request, general_cleanup, with_result
+from tests.e2e.common import E2E_BASE, close_pull_request, general_cleanup, with_result
 
 
 class Action(str, Enum):
@@ -67,13 +67,16 @@ def main() -> None:
         "--action-kwargs", help="Arguments for the action as a JSON mapping", default="{}"
     )
     parser.add_argument("--github-token", help="Github token to setup repository")
+    parser.add_argument("--charm-dir", help="Charm dir", default="")
     args = parser.parse_args()
     urls_with_actions = json.loads(args.urls_with_actions)
     discourse_config = json.loads(args.discourse_config)
     action_kwargs = json.loads(args.action_kwargs)
 
     discourse = create_discourse(**discourse_config)
-    repository = create_repository_client(args.github_token, pathlib.Path.cwd())
+    repository = create_repository_client(
+        args.github_token, pathlib.Path.cwd(), charm_dir=args.charm_dir
+    )
 
     match args.action:
         case Action.PREPARE.value:
@@ -132,7 +135,7 @@ def _prepare(repository: RepositoryClient, discourse: Discourse) -> bool:  # pyl
     """
     repository._git_repo.git.fetch("--all")  # pylint: disable=W0212
 
-    repository.create_branch(E2E_BASE, E2E_SETUP).switch(E2E_BASE)
+    repository.create_branch(E2E_BASE).switch(E2E_BASE)
 
     repository._git_repo.git.push("-f", "origin", E2E_BASE)  # pylint: disable=W0212
 
@@ -379,7 +382,6 @@ def check_update(
     repository._git_repo.git.fetch("--all")  # pylint: disable=W0212
 
     # If update was successful and a PR was created, we simulate the merge remotely
-    repository.switch(E2E_SETUP)
 
     repository.create_branch(E2E_BASE, f"origin/{DEFAULT_BRANCH_NAME}").switch(E2E_BASE)
     repository._git_repo.git.push(  # pylint: disable=W0212
