@@ -2,4 +2,3 @@
  placeholder index content for testing,  repository: canonical/gatekeeper-repo-test,  branch: use-real-discourse-gateway-dep,  commit sha: 190aab9a9a587395a9c8b55875bb6782ec839089,  some uuid: 3a26f29d-7104-48ea-a3a9-2426fe5a5b6d
 
 # Contents
-
