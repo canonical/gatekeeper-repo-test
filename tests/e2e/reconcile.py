@@ -10,15 +10,15 @@ import logging
 import pathlib
 from enum import Enum
 
+from gatekeeper.constants import DOCUMENTATION_TAG
+from gatekeeper.discourse import Discourse, create_discourse
+from gatekeeper.exceptions import DiscourseError
+from gatekeeper.repository import DEFAULT_BRANCH_NAME
+from gatekeeper.repository import Client as RepositoryClient
+from gatekeeper.repository import create_repository_client
 from github.GithubException import UnknownObjectException
 from github.Repository import Repository
 
-from src.gatekeeper.constants import DOCUMENTATION_TAG
-from src.gatekeeper.discourse import Discourse, create_discourse
-from src.gatekeeper.exceptions import DiscourseError
-from src.gatekeeper.repository import DEFAULT_BRANCH_NAME
-from src.gatekeeper.repository import Client as RepositoryClient
-from src.gatekeeper.repository import create_repository_client
 from tests.e2e.common import E2E_BASE, E2E_SETUP, close_pull_request, general_cleanup, with_result
 
 
@@ -67,13 +67,16 @@ def main() -> None:
         "--action-kwargs", help="Arguments for the action as a JSON mapping", default="{}"
     )
     parser.add_argument("--github-token", help="Github token to setup repository")
+    parser.add_argument("--charm-dir", help="Charm dir", default="")
     args = parser.parse_args()
     urls_with_actions = json.loads(args.urls_with_actions)
     discourse_config = json.loads(args.discourse_config)
     action_kwargs = json.loads(args.action_kwargs)
 
     discourse = create_discourse(**discourse_config)
-    repository = create_repository_client(args.github_token, pathlib.Path.cwd())
+    repository = create_repository_client(
+        args.github_token, pathlib.Path.cwd(), charm_dir=args.charm_dir
+    )
 
     match args.action:
         case Action.PREPARE.value:
