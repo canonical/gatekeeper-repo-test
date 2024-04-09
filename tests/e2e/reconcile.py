@@ -19,7 +19,7 @@ from gatekeeper.repository import create_repository_client
 from github.GithubException import UnknownObjectException
 from github.Repository import Repository
 
-from tests.e2e.common import E2E_BASE, E2E_SETUP, close_pull_request, general_cleanup, with_result
+from tests.e2e.common import E2E_BASE, close_pull_request, general_cleanup, with_result
 
 
 class Action(str, Enum):
@@ -135,7 +135,7 @@ def _prepare(repository: RepositoryClient, discourse: Discourse) -> bool:  # pyl
     """
     repository._git_repo.git.fetch("--all")  # pylint: disable=W0212
 
-    repository.create_branch(E2E_BASE, E2E_SETUP).switch(E2E_BASE)
+    repository.create_branch(E2E_BASE).switch(E2E_BASE)
 
     repository._git_repo.git.push("-f", "origin", E2E_BASE)  # pylint: disable=W0212
 
@@ -382,7 +382,6 @@ def check_update(
     repository._git_repo.git.fetch("--all")  # pylint: disable=W0212
 
     # If update was successful and a PR was created, we simulate the merge remotely
-    repository.switch(E2E_SETUP)
 
     repository.create_branch(E2E_BASE, f"origin/{DEFAULT_BRANCH_NAME}").switch(E2E_BASE)
     repository._git_repo.git.push(  # pylint: disable=W0212

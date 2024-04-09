@@ -25,7 +25,6 @@ from gatekeeper.repository import (
 from tests.e2e.common import (
     E2E_BASE,
     E2E_BRANCH,
-    E2E_SETUP,
     close_pull_request,
     general_cleanup,
     with_result,
@@ -111,7 +110,7 @@ def prepare(repository: Client, discourse: Discourse) -> bool:
 
     repository._git_repo.git.fetch("--all")  # pylint: disable=W0212
 
-    repository.create_branch(E2E_BASE, E2E_SETUP).switch(E2E_BASE)
+    repository.create_branch(E2E_BASE).switch(E2E_BASE)
 
     repository._git_repo.git.push("-f", "-u", "origin", E2E_BASE)  # pylint: disable=W0212
 
