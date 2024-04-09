@@ -22,13 +22,7 @@ from gatekeeper.repository import (
     create_repository_client,
 )
 
-from tests.e2e.common import (
-    E2E_BASE,
-    E2E_BRANCH,
-    close_pull_request,
-    general_cleanup,
-    with_result,
-)
+from tests.e2e.common import E2E_BASE, E2E_BRANCH, close_pull_request, general_cleanup, with_result
 
 
 class Action(str, Enum):

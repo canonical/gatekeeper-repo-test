@@ -382,6 +382,7 @@ def check_update(
     repository._git_repo.git.fetch("--all")  # pylint: disable=W0212
 
     # If update was successful and a PR was created, we simulate the merge remotely
+    repository.switch("origin/main")  # A random branch, so E2E_BASE can be deleted
 
     repository.create_branch(E2E_BASE, f"origin/{DEFAULT_BRANCH_NAME}").switch(E2E_BASE)
     repository._git_repo.git.push(  # pylint: disable=W0212
