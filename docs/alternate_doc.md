@@ -1,0 +1,2 @@
+# Charm Upload Automation Reconcile Test Documentation Alternate Title some uuid: e98d812c-5577-4920-9d6e-8ea54def71ac
+ placeholder documentation alternate content for testing,  repository: canonical/gatekeeper-repo-test,  branch: use-real-discourse-gateway-dep,  commit sha: aaaadd380ae88cb66b8f8dbfbe52e97c00c8204a,  some uuid: e87ecd9c-c369-49e9-9bbe-1b3e355a3fe2
