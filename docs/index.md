@@ -3,5 +3,4 @@
 
 # Contents
 
-1. [Charm Upload Automation Reconcile Test Documentation Alternate Title some uuid: b741c362-1278-4c03-ad8d-d34a66dd8874](alternate-doc.md)
 1. [Charm Upload Automation Reconcile Test Documentation Title some uuid: 12bac25a-c0bb-4d7b-80dc-f654c63030db](doc.md)
