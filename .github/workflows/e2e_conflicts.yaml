@@ -176,18 +176,18 @@ jobs:
           git branch
           git status
 
-      # - name: Prepare stage 2
-      #   id: prepare-stage-2
-      #   run: |
-      #     PYTHONPATH=$(pwd) python3 tests/e2e/migrate.py --action prepare --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
+      - name: Prepare stage 2
+        id: prepare-stage-2
+        run: |
+          PYTHONPATH=$(pwd) python3 tests/e2e/migrate.py --action prepare --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
           
-      #     echo $(git log | head -n 1)
+          echo $(git log | head -n 1)
           
-      #     echo "Tags"
-      #     echo $(git tag -l | cat)
+          echo "Tags"
+          echo $(git tag -l | cat)
           
-      #     COMMIT_SHA=$(git log | head -n 1 | sed -En "s/commit\ //p")
-      #     echo "commit_sha=$COMMIT_SHA" >> "$GITHUB_OUTPUT"
+          COMMIT_SHA=$(git log | head -n 1 | sed -En "s/commit\ //p")
+          echo "commit_sha=$COMMIT_SHA" >> "$GITHUB_OUTPUT"
 
 
       - name: Import Documentation 2
