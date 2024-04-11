@@ -6,13 +6,11 @@
 import logging
 import sys
 
+from gatekeeper.constants import DOCUMENTATION_TAG
+from gatekeeper.repository import DEFAULT_BRANCH_NAME, Client
 from git import GitCommandError
 from github import GithubException
 
-from src.gatekeeper.constants import DOCUMENTATION_TAG
-from src.gatekeeper.repository import DEFAULT_BRANCH_NAME, Client
-
-E2E_SETUP = "origin/tests/e2e"
 E2E_BASE = "tests/base"
 E2E_BRANCH = "tests/feature"
 
