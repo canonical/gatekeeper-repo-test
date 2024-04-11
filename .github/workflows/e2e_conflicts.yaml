@@ -224,10 +224,3 @@ jobs:
           
           echo "Tags"
           echo $(git tag -l | cat)
-          
-      - name: Cleanup 2
-        run: |
-          if [ ${{ steps.release-feature.outputs.pr_action }}  != "closed" ]; then exit 1; fi
-
-          PYTHONPATH=$(pwd) python3  tests/e2e/migrate.py  --action cleanup --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
-          
