@@ -11,6 +11,7 @@ from gatekeeper.repository import DEFAULT_BRANCH_NAME, Client
 from git import GitCommandError
 from github import GithubException
 
+E2E_SETUP = "origin/main"
 E2E_BASE = "tests/base"
 E2E_BRANCH = "tests/feature"
 
