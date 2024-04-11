@@ -173,7 +173,9 @@ jobs:
       - name: Setup Python
         run: |
           set -x
-          git branch
+          git branch -a
+          git fetch --prune
+          git branch -a
           git status
 
       - name: Prepare stage 2
