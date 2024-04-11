@@ -169,7 +169,11 @@ jobs:
 
           PYTHONPATH=$(pwd) python3  tests/e2e/migrate.py  --action cleanup --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
 
-      # - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+      - name: Setup Python
+        run: |
+          git branch
+          git status
 
       # - name: Prepare stage 2
       #   id: prepare-stage-2
