@@ -6,10 +6,10 @@ on:
   schedule:
     - cron: '00 16 * * *'
 
+concurrency: e2e-tests
 
 jobs:
   conflict-workflow:
-    concurrency: e2e-tests
     permissions: write-all
     runs-on: ubuntu-22.04
     steps:
@@ -168,3 +168,93 @@ jobs:
           if [ ${{ steps.release-feature.outputs.pr_action }}  != "closed" ]; then exit 1; fi
 
           PYTHONPATH=$(pwd) python3  tests/e2e/migrate.py  --action cleanup --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
+
+  # This job tests the charm_dir parameter in discourse-gatekeeper.
+  charm-dir-test-workflow:
+    permissions: write-all
+    runs-on: ubuntu-22.04
+    steps:
+      # Each job has to have this configuration because secrets can be passed through the output of
+      # another job
+      - name: Generate discourse configuration
+        id: configuration
+        run: |
+          echo "discourse= \
+            { \
+              \"hostname\":\"discourse.charmhub.io\", \
+              \"category_id\":\"41\", \
+              \"api_username\":\"${{ secrets.DISCOURSE_API_USERNAME }}\", \
+              \"api_key\":\"${{ secrets.DISCOURSE_API_KEY }}\" \
+            }" >> $GITHUB_OUTPUT
+
+      - uses: actions/checkout@v3
+      - name: Setup Python
+        run: |
+          sudo apt update && sudo apt install python3-pip git
+          pip3 install --upgrade pip
+          pip3 install -r requirements.txt
+
+      - name: Prepare stage
+        id: prepare-stage
+        run: |
+          PYTHONPATH=$(pwd) python3 tests/e2e/migrate.py --charm-dir "./charm" --action prepare --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
+          # For this case, charm-dir not the base directory. Also, use charmcraft.yaml instead of metadata.yaml.
+          mkdir -p "./charm"
+          echo "name: $(echo ${{ github.repository }} | sed 's:.*/::')-test" > ./charm/charmcraft.yaml
+          echo "links:" >> ./charm/charmcraft.yaml
+          echo "  documentation: https://discourse.charmhub.io/t/charmed-mongodb-k8s-documentation/9731" >> ./charm/charmcraft.yaml
+          git rm metadata.yaml
+          git rm charmcraft.yaml
+          git add charm/charmcraft.yaml
+          git commit -m "Use charmcraft.yaml instead of metadata.yaml"
+          git push
+          
+          echo $(git log | head -n 1)
+          
+          echo "Tags"
+          echo $(git tag -l | cat)
+          
+          COMMIT_SHA=$(git log | head -n 1 | sed -En "s/commit\ //p")
+          echo "commit_sha=$COMMIT_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Import Documentation
+        id: import
+        uses: canonical/discourse-gatekeeper@main
+        with:
+          discourse_host: discourse.charmhub.io
+          discourse_api_username: ${{ secrets.DISCOURSE_API_USERNAME }}
+          discourse_api_key: ${{ secrets.DISCOURSE_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          dry_run: true
+          base_branch: "tests/base"
+          commit_sha: ${{  steps.prepare-stage.outputs.commit_sha }}
+          charm_dir: charm
+
+      - name: Check creation
+        run: |
+          echo '${{ steps.import.outputs.pr_link }}'
+          echo '${{ steps.import.outputs.pr_action }}'
+          echo $(git log | head -n 1)
+          PYTHONPATH=$(pwd) python3  tests/e2e/migrate.py --charm-dir "./charm" --action check-pull-request --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
+          echo $(git log | head -n 1)
+          
+          echo "Tags"
+          echo $(git tag -l | cat)
+          
+      - name: Merge PR
+        id: merge-import
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr merge ${{ steps.import.outputs.pr_link }} --squash
+
+          git pull          
+          git branch -vv
+          git status
+          
+          echo "Tags"
+          echo $(git tag -l | cat)
+
+      - name: Delete discourse-gatekeeper/base-content tag
+        run: |
+          git push --delete origin 'discourse-gatekeeper/base-content'
