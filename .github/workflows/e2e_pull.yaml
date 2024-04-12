@@ -169,6 +169,7 @@ jobs:
 
           PYTHONPATH=$(pwd) python3  tests/e2e/migrate.py  --action cleanup --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
 
+  # This job tests the charm_dir parameter in discourse-gatekeeper.
   charm-dir-test-workflow:
     concurrency: e2e-tests
     permissions: write-all
@@ -198,8 +199,7 @@ jobs:
         id: prepare-stage
         run: |
           PYTHONPATH=$(pwd) python3 tests/e2e/migrate.py --charm-dir "./charm" --action prepare --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
-
-          # For this case, charm-dir not the base directory, use charmcraft.yaml instead of metadata.yaml.
+          # For this case, charm-dir not the base directory. Also, use charmcraft.yaml instead of metadata.yaml.
           mkdir -p "./charm"
           echo "name: $(echo ${{ github.repository }} | sed 's:.*/::')-test" > ./charm/charmcraft.yaml
           echo "links:" >> ./charm/charmcraft.yaml
@@ -255,15 +255,7 @@ jobs:
           
           echo "Tags"
           echo $(git tag -l | cat)
-          
-          COMMIT_SHA=$(git log | head -n 1 | sed -En "s/commit\ //p")
-          echo "commit_sha=$COMMIT_SHA" >> "$GITHUB_OUTPUT"
 
-      - name: Cleanup
+      - name: Delete discourse-gatekeeper/base-content tag
         run: |
-          set -x
-          git branch -a
-          git tag -l
           git push --delete origin 'discourse-gatekeeper/base-content'
-          git branch -a
-          git tag -l
