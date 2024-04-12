@@ -6,10 +6,10 @@ on:
   schedule:
     - cron: '00 16 * * *'
 
+concurrency: e2e-tests
 
 jobs:
   conflict-workflow:
-    concurrency: e2e-tests
     permissions: write-all
     runs-on: ubuntu-22.04
     steps:
@@ -171,7 +171,6 @@ jobs:
 
   # This job tests the charm_dir parameter in discourse-gatekeeper.
   charm-dir-test-workflow:
-    concurrency: e2e-tests
     permissions: write-all
     runs-on: ubuntu-22.04
     steps:
