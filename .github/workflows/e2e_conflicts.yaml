@@ -226,7 +226,7 @@ jobs:
           echo $(git tag -l | cat)
 
       - name: Merge PR
-        id: merge-import
+        id: merge-import-2
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
