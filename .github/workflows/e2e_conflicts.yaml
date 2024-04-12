@@ -224,3 +224,29 @@ jobs:
           
           echo "Tags"
           echo $(git tag -l | cat)
+
+      - name: Merge PR
+        id: merge-import
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr merge ${{ steps.import-2.outputs.pr_link }} --squash
+
+          git pull          
+          git branch -vv
+          git status
+          
+          echo "Tags"
+          echo $(git tag -l | cat)
+          
+          COMMIT_SHA=$(git log | head -n 1 | sed -En "s/commit\ //p")
+          echo "commit_sha=$COMMIT_SHA" >> "$GITHUB_OUTPUT"
+          
+      - name: Clean the leftovers
+        run: |
+          set -x
+          git branch -a
+          git tab -l
+          git push --delete origin 'discourse-gatekeeper/base-content'
+          git branch -a
+          git tab -l
