@@ -197,20 +197,18 @@ jobs:
       - name: Prepare stage
         id: prepare-stage
         run: |
-          PYTHONPATH=$(pwd) python3 tests/e2e/migrate.py --charm-dir "./${{ matrix.charm-dir }}" --action prepare --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
+          PYTHONPATH=$(pwd) python3 tests/e2e/migrate.py --charm-dir "./charm" --action prepare --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
 
-          if [ ! -d "./${{ matrix.charm-dir }}" ]; then
-              # For this case, charm-dir not the base directory, use charmcraft.yaml instead of metadata.yaml.
-              mkdir -p "./${{ matrix.charm-dir }}"
-              echo "name: $(echo ${{ github.repository }} | sed 's:.*/::')-test" > ./${{ matrix.charm-dir }}/charmcraft.yaml
-              echo "links:" >> ./${{ matrix.charm-dir }}/charmcraft.yaml
-              echo "  documentation: https://discourse.charmhub.io/t/charmed-mongodb-k8s-documentation/9731" >> ./${{ matrix.charm-dir }}/charmcraft.yaml
-              git rm metadata.yaml
-              git rm charmcraft.yaml
-              git add charm/charmcraft.yaml
-              git commit -m "Use charmcraft.yaml instead of metadata.yaml"
-              git push
-          fi
+          # For this case, charm-dir not the base directory, use charmcraft.yaml instead of metadata.yaml.
+          mkdir -p "./charm"
+          echo "name: $(echo ${{ github.repository }} | sed 's:.*/::')-test" > ./charm/charmcraft.yaml
+          echo "links:" >> ./charm/charmcraft.yaml
+          echo "  documentation: https://discourse.charmhub.io/t/charmed-mongodb-k8s-documentation/9731" >> ./charm/charmcraft.yaml
+          git rm metadata.yaml
+          git rm charmcraft.yaml
+          git add charm/charmcraft.yaml
+          git commit -m "Use charmcraft.yaml instead of metadata.yaml"
+          git push
           
           echo $(git log | head -n 1)
           
@@ -237,7 +235,7 @@ jobs:
           echo '${{ steps.import.outputs.pr_link }}'
           echo '${{ steps.import.outputs.pr_action }}'
           echo $(git log | head -n 1)
-          PYTHONPATH=$(pwd) python3  tests/e2e/migrate.py --charm-dir "./${{ matrix.charm-dir }}" --action check-pull-request --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
+          PYTHONPATH=$(pwd) python3  tests/e2e/migrate.py --charm-dir "./charm" --action check-pull-request --github-token  ${{ secrets.GITHUB_TOKEN }} '${{ steps.configuration.outputs.discourse }}'
           echo $(git log | head -n 1)
           
           echo "Tags"
