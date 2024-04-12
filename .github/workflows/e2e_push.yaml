@@ -4,9 +4,10 @@ on:
   workflow_dispatch:
   pull_request:
 
+concurrency: e2e-tests
+
 jobs:
   e2e-tests-reconcile:
-    concurrency: e2e-tests
     permissions: write-all
     runs-on: ubuntu-22.04
     steps:
