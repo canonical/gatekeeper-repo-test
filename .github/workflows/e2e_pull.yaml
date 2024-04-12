@@ -11,6 +11,7 @@ concurrency: e2e-tests
 jobs:
   conflict-workflow:
     permissions: write-all
+    concurrency: e2e-tests-pull
     runs-on: ubuntu-22.04
     steps:
       # Each job has to have this configuration because secrets can be passed through the output of
@@ -172,6 +173,7 @@ jobs:
   # This job tests the charm_dir parameter in discourse-gatekeeper.
   charm-dir-test-workflow:
     permissions: write-all
+    concurrency: e2e-tests-pull
     runs-on: ubuntu-22.04
     steps:
       # Each job has to have this configuration because secrets can be passed through the output of
