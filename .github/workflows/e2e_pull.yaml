@@ -229,7 +229,7 @@ jobs:
           dry_run: true
           base_branch: "tests/base"
           commit_sha: ${{  steps.prepare-stage.outputs.commit_sha }}
-          charm_dir: charm
+          # charm_dir: charm
 
       - name: Check creation
         run: |
