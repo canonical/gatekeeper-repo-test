@@ -9,7 +9,7 @@ concurrency: e2e-tests
 jobs:
   e2e-tests-reconcile:
     permissions: write-all
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       # Each job has to have this configuration because secrets can be passed through the output of
       # another job
